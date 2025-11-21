@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-FROM ubuntu:noble
+FROM amazonlinux:2023
 
 # Replace the args to lock to a specific version
 ARG GREENGRASS_RELEASE_VERSION=latest
@@ -18,7 +18,7 @@ LABEL greengrass-version=${GREENGRASS_RELEASE_VERSION}
 ENV TINI_KILL_PROCESS_GROUP=1 \ 
     GGC_ROOT_PATH=/greengrass/v2 \
     PROVISION=false \
-    AWS_REGION=us-west-2 \
+    AWS_REGION=us-east-1 \
     THING_NAME=default_thing_name \
     THING_GROUP_NAME=default_thing_group_name \
     TES_ROLE_NAME=default_tes_role_name \
@@ -34,10 +34,10 @@ RUN env
 COPY "greengrass-entrypoint.sh" /
 
 # Install Greengrass v2 dependencies
-RUN apt-get update && \
-    apt-get install -y vim curl tar unzip wget sudo procps which uidmap python3 openjdk-21-jdk-headless && \
+RUN yum update -y && \
+    yum install -y tar unzip wget sudo procps which shadow-utils python3 java-11-amazon-corretto-headless && \
     wget $GREENGRASS_RELEASE_URI && \
-    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/yum && \
     chmod +x /greengrass-entrypoint.sh && \
     mkdir -p /opt/greengrassv2 $GGC_ROOT_PATH && unzip $GREENGRASS_ZIP_FILE -d /opt/greengrassv2 && rm $GREENGRASS_ZIP_FILE
 
