@@ -18,6 +18,7 @@ LABEL greengrass-version=${GREENGRASS_RELEASE_VERSION}
 ENV TINI_KILL_PROCESS_GROUP=1 \ 
     GGC_ROOT_PATH=/greengrass/v2 \
     PROVISION=false \
+    AWS_DEFAULT_REGION=us-west-2 \
     AWS_REGION=us-west-2 \
     THING_NAME=default_thing_name \
     THING_GROUP_NAME=default_thing_group_name \
