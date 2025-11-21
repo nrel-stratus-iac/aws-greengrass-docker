@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c -f docker-compose.yml
+    kompose.version: 1.26.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    dav.release: {{ .Release.Name }}
+    dav.chart: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      dav.release: {{ .Release.Name }}
+      dav.chart: {{ .Chart.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c -f docker-compose.yml
+        kompose.version: 1.26.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        dav.release: {{ .Release.Name }}
+        dav.chart: {{ .Chart.Name }}
+    spec:
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets: 
+      {{- range .Values.image.pullSecrets }}
+        - name: {{ .name }}
+      {{- end }}
+      {{- end }}
+      containers:
+        - env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          envFrom:
+          - secretRef:
+              name: {{ .Values.envSecretRef }}
+              optional: false
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # livenessProbe:
+          #   failureThreshold: 3
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.service.defaultPort }}
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
+          #   successThreshold: 1
+          #   timeoutSeconds: 1
+          name: {{ .Chart.Name }}
+          ports:
+            - containerPort: {{ .Values.service.defaultPort }}
+            - containerPort: {{ .Values.service.altPort }}
+          resources: {}
+          volumeMounts:
+            - mountPath: /greengrass
+              name: {{ .Chart.Name }}
+      restartPolicy: Always
+      volumes:
+        - name: {{ .Chart.Name }}
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-pvc
+status: {}

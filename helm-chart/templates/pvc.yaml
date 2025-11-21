@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    dav.release: {{ .Release.Name }}
+    dav.chart: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+status: {}

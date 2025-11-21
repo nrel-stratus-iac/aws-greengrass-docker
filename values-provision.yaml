@@ -1,0 +1,18 @@
+replicaCount: 1
+image:
+  repository: ghcr.io/nrel-stratus-iac/aws-greengrass-docker
+  tag: v2.5.4-r1
+  pullPolicy: IfNotPresent
+env:
+- name: PROVISION
+  value: "true"
+- name: DEPLOY_DEV_TOOLS
+  value: "true"
+- name: AWS_DEFAULT_REGION
+  value: us-west-2
+- name: AWS_REGION
+  value: us-west-2
+envSecretRef: greengrass-v2-env
+service:
+  defaultPort: 8883
+  altPort: 8443
